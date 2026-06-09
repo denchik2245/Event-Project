@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EventFlow | Посетитель</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Jost:wght@600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="visitor">
+    <header class="site-head">
+      <a class="logo" href="/visitor">EventFlow</a>
+      <nav>
+        <a class="active" href="/visitor">Посетителю</a>
+        <a href="/organizer">Организатору</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="intro">
+        <h1>Выберите событие и&nbsp;оформите билет</h1>
+        <p class="lead">После оформления появится QR-код оплаты. Перейдите по&nbsp;нему, нажмите «Оплатить», и&nbsp;код билета придёт на&nbsp;вашу почту.</p>
+      </section>
+
+      <section class="notice" id="notice" aria-live="polite"></section>
+
+      <section class="visitor-grid">
+        <div class="surface">
+          <div class="section-title">
+            <span>Афиша</span>
+            <h2>Доступные мероприятия</h2>
+          </div>
+          <div id="eventsList" class="events-list"></div>
+        </div>
+
+        <aside class="surface">
+          <div class="section-title">
+            <span>Оформление</span>
+            <h2>Ваш билет</h2>
+          </div>
+          <form id="ticketForm" class="form">
+            <label>
+              Мероприятие
+              <select name="event_id" id="eventSelect" required></select>
+            </label>
+            <label>
+              Ваше имя
+              <input name="buyer_name" required minlength="2" placeholder="Иван Петров" />
+            </label>
+            <label>
+              Почта для&nbsp;кода билета
+              <input name="buyer_email" required type="email" placeholder="name@gmail.com" />
+            </label>
+            <button type="submit">Оформить билет</button>
+          </form>
+        </aside>
+      </section>
+
+      <div id="paymentBox" class="payment-modal hidden" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+        <div class="payment-dialog">
+          <button class="modal-close" id="paymentClose" type="button" aria-label="Закрыть окно оплаты">×</button>
+          <div class="section-title">
+            <span>Оплата</span>
+            <h2 id="paymentTitle">Оплата билета</h2>
+          </div>
+          <p class="payment-note">Отсканируйте QR-код или перейдите к&nbsp;оплате по&nbsp;кнопке ниже.</p>
+          <img id="paymentQr" alt="QR-код для оплаты" />
+          <a id="paymentLink" class="button-link" href="#">Оплатить</a>
+        </div>
+      </div>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

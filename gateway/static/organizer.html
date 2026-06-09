@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EventFlow | Организатор</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=Jost:wght@600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body data-page="organizer">
+    <header class="site-head">
+      <a class="logo" href="/visitor">EventFlow</a>
+      <nav>
+        <a href="/visitor">Посетителю</a>
+        <a class="active" href="/organizer">Организатору</a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="intro compact-intro">
+        <h1>Создавайте мероприятия и&nbsp;проверяйте гостей</h1>
+      </section>
+
+      <section class="notice" id="notice" aria-live="polite"></section>
+
+      <section class="organizer-grid">
+        <article class="surface">
+          <div class="section-title">
+            <span>Новое событие</span>
+            <h2>Создать мероприятие</h2>
+          </div>
+          <form id="eventForm" class="form">
+            <input type="hidden" name="event_id" />
+            <label>
+              Название
+              <input name="title" required minlength="3" value="University Tech Night" />
+            </label>
+            <label>
+              Описание
+              <textarea name="description" rows="3">Встреча студентов, доклады и нетворкинг</textarea>
+            </label>
+            <div class="field-row">
+              <label>
+                Дата и&nbsp;время
+                <input name="event_date" required type="datetime-local" value="2026-06-15T18:00" />
+              </label>
+              <label>
+                Место проведения
+                <input name="location" required value="Главный корпус, аудитория 301" />
+              </label>
+            </div>
+            <div class="field-row">
+              <label>
+                Количество билетов
+                <input name="total_tickets" required type="number" min="0" value="50" />
+              </label>
+              <label>
+                Цена, ₽
+                <input name="price_rub" required type="number" min="0" value="1000" />
+              </label>
+            </div>
+            <button type="submit">Создать мероприятие</button>
+            <button class="secondary-action hidden" id="cancelEdit" type="button">Отменить редактирование</button>
+          </form>
+        </article>
+
+        <article class="surface">
+          <div class="section-title">
+            <span>Контроль входа</span>
+            <h2>Проверить код билета</h2>
+          </div>
+          <form id="validateForm" class="form">
+            <label>
+              Код из&nbsp;письма посетителя
+              <input name="qr_token" required placeholder="Введите код билета" />
+            </label>
+            <button type="submit">Проверить</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="surface manage-panel">
+        <div class="section-title">
+          <h2>Управление мероприятиями</h2>
+        </div>
+        <div id="manageEventsList" class="manage-events-list"></div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
