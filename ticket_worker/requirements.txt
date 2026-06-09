@@ -1,0 +1,6 @@
+grpcio==1.64.1
+grpcio-tools==1.64.1
+psycopg[binary]==3.2.1
+qrcode[pil]==7.4.2
+redis==5.0.7
+requests==2.32.3

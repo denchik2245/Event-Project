@@ -1,0 +1,122 @@
+services:
+  consul:
+    image: consul:1.15
+    command: agent -dev -client=0.0.0.0
+    ports:
+      - "8500:8500"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  events-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: events
+      POSTGRES_USER: events
+      POSTGRES_PASSWORD: events
+    volumes:
+      - events-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U events -d events"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  tickets-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tickets
+      POSTGRES_USER: tickets
+      POSTGRES_PASSWORD: tickets
+    volumes:
+      - tickets-db-data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickets -d tickets"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  event-service:
+    build:
+      context: .
+      dockerfile: event_service/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://events:events@events-db:5432/events
+      CONSUL_URL: http://consul:8500
+      GRPC_PORT: 50051
+    depends_on:
+      events-db:
+        condition: service_healthy
+      consul:
+        condition: service_started
+
+  ticket-service:
+    build:
+      context: .
+      dockerfile: ticket_service/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://tickets:tickets@tickets-db:5432/tickets
+      REDIS_URL: redis://redis:6379/0
+      CONSUL_URL: http://consul:8500
+      GRPC_PORT: 50052
+    depends_on:
+      tickets-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      consul:
+        condition: service_started
+      event-service:
+        condition: service_started
+
+  ticket-worker:
+    build:
+      context: .
+      dockerfile: ticket_worker/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://tickets:tickets@tickets-db:5432/tickets
+      REDIS_URL: redis://redis:6379/0
+      QR_DIR: /app/generated_qr
+      CONSUL_URL: http://consul:8500
+      GMAIL_USER: ${GMAIL_USER:-}
+      GMAIL_APP_PASSWORD: ${GMAIL_APP_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-}
+    volumes:
+      - qr-data:/app/generated_qr
+    depends_on:
+      tickets-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      consul:
+        condition: service_started
+      event-service:
+        condition: service_started
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      CONSUL_URL: http://consul:8500
+      PUBLIC_BASE_URL: http://localhost:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      consul:
+        condition: service_started
+      event-service:
+        condition: service_started
+      ticket-service:
+        condition: service_started
+
+volumes:
+  events-db-data:
+  tickets-db-data:
+  qr-data:
