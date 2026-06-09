@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package tickets;
+
+service TicketService {
+  rpc BuyTicket(BuyTicketRequest) returns (TicketResponse);
+  rpc PayTicket(PayTicketRequest) returns (TicketResponse);
+  rpc GetTicket(GetTicketRequest) returns (TicketResponse);
+  rpc ValidateTicket(ValidateTicketRequest) returns (ValidateTicketResponse);
+}
+
+message BuyTicketRequest {
+  int64 event_id = 1;
+  string buyer_name = 2;
+  string buyer_email = 3;
+}
+
+message GetTicketRequest {
+  int64 ticket_id = 1;
+}
+
+message PayTicketRequest {
+  int64 ticket_id = 1;
+}
+
+message ValidateTicketRequest {
+  string qr_token = 1;
+}
+
+message TicketResponse {
+  int64 id = 1;
+  int64 event_id = 2;
+  string buyer_name = 3;
+  string buyer_email = 4;
+  string status = 5;
+  string qr_token = 6;
+  string qr_image_path = 7;
+  bool visited = 8;
+}
+
+message ValidateTicketResponse {
+  bool ok = 1;
+  string message = 2;
+  int64 ticket_id = 3;
+}
