@@ -123,15 +123,13 @@ async def payment_qr(ticket_id: int):
     image = qrcode.make(payment_url, image_factory=qrcode.image.svg.SvgPathImage)
     return Response(content=image.to_string(), media_type="image/svg+xml")
 
-"/events", status_code=201
+@app.post("/events", status_code=201)
 async def create_event(payload: EventCreate):
     def call():
         channel = grpc.insecure_channel(service_address("event-service"))
         stub = events_pb2_grpc.EventServiceStub(channel)
         return stub.CreateEvent(
-
-
-events_pb2.CreateEventRequest(
+            events_pb2.CreateEventRequest(
                 title=payload.title,
                 description=payload.description,
                 event_date=payload.event_date,
@@ -206,7 +204,7 @@ async def delete_event(event_id: int):
     except grpc.RpcError as error:
         raise grpc_error(error)
 
-"/tickets", status_code=202
+@app.post("/tickets", status_code=202)
 async def buy_ticket(payload: TicketBuy):
     def call():
         channel = grpc.insecure_channel(service_address("ticket-service"))
@@ -229,7 +227,7 @@ async def buy_ticket(payload: TicketBuy):
     except grpc.RpcError as error:
         raise grpc_error(error)
 
-"/tickets/{ticket_id}/pay"
+@app.post("/tickets/{ticket_id}/pay")
 async def pay_ticket(ticket_id: int):
     def call():
         channel = grpc.insecure_channel(service_address("ticket-service"))
@@ -241,10 +239,7 @@ async def pay_ticket(ticket_id: int):
         data = ticket_dict(ticket)
         data["message"] = "Payment confirmed, ticket code email is queued"
         return data
-    except
-
-
-grpc.RpcError as error:
+    except grpc.RpcError as error:
         raise grpc_error(error)
 
 @app.get("/tickets/{ticket_id}")
@@ -259,7 +254,7 @@ async def get_ticket(ticket_id: int):
     except grpc.RpcError as error:
         raise grpc_error(error)
 
-"/tickets/validate"
+@app.post("/tickets/validate")
 async def validate_ticket(payload: TicketValidation):
     def call():
         channel = grpc.insecure_channel(service_address("ticket-service"))
